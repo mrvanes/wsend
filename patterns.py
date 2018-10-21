@@ -20,7 +20,7 @@ TIMER = utils.next_time(time.time(), 1.0/FPS)
 def pattern(pattern, speed, color):
     global sckt, LENGTH, FPS, TIMER
     frame = 0
-    print("P: {}, S: {}, C: {}\r".format(pattern, speed, color))
+    print("P: %s, S: %.1f, C: %.1f\r" % (pattern, speed, color))
 
     frames = FPS * speed
     while frame < frames:
@@ -66,23 +66,23 @@ def pattern(pattern, speed, color):
                 #(r,g,b) = (0,0,0)
                 bffr += chr(r) + chr(g) + chr(b)
             bffr = bffr[3:-6]
-        # Twinkle white
+        # Twinkle color
         elif pattern == '5':
             rnd = random.randint(0,3)
             rnd2 = random.randint(0,10)
             for led in xrange(LENGTH):
                 (r,g,b) = (0,0,0)
                 if frame % 2 and led == rnd and rnd2<6:
-                    (r,g,b) = utils.hsv2rgb(0,0,1)
+                    (r,g,b) = utils.hsv2rgb(color,0.7,1)
                 bffr += chr(r) + chr(g) + chr(b)
-        # Twinkle color
+        # Twinkle white
         elif pattern == '6':
             rnd = random.randint(0,3)
             rnd2 = random.randint(0,10)
             for led in xrange(LENGTH):
                 (r,g,b) = (0,0,0)
                 if frame % 2 and led == rnd and rnd2<6:
-                    (r,g,b) = utils.hsv2rgb(color,0.7,1)
+                    (r,g,b) = utils.hsv2rgb(0,0,1)
                 bffr += chr(r) + chr(g) + chr(b)
         # Twinkle radom color
         elif pattern == '7':
@@ -93,7 +93,7 @@ def pattern(pattern, speed, color):
             for led in xrange(LENGTH):
                 (r,g,b) = (0,0,0)
                 if frame % 2 and led == rnd and rnd2<6:
-                    (r,g,b) = utils.hsv2rgb(rndh,rnds,1)
+                    (r,g,b) = utils.hsv2rgb(rndh,1,1)
                 bffr += chr(r) + chr(g) + chr(b)
         # Dark
         else:
