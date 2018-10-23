@@ -7,7 +7,7 @@ import patterns
 threading.Timer(1, utils.getkey).start()
 
 color = 0.5
-speed = 0.5
+speed = 1
 utils.KEY = ptrn = '1'
 
 while 1:

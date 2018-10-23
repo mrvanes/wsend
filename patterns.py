@@ -22,20 +22,20 @@ def pattern(pattern, speed, color):
     frame = 0
     print("P: %s, S: %.1f, C: %.1f\r" % (pattern, speed, color))
 
-    frames = FPS * speed
-    while frame < frames:
+    frames = int(FPS*speed)
+    for frame in xrange(frames):
         #print("f: %s" % frame)
         bffr = ""
         # Hard run up
         if pattern == '1':
-            tracker = LENGTH*frame/(FPS*speed)
+            tracker = LENGTH*frame/frames
             for led in xrange(LENGTH):
                 (h,s,v) = (color, 0.7, 0.5) if led == int(tracker) else (0,0,0)
                 (r,g,b) = utils.hsv2rgb(h,s,v)
                 bffr += chr(r) + chr(g) + chr(b)
         # Hard run down
         elif pattern == '2':
-            tracker = LENGTH*frame/(FPS*speed)
+            tracker = LENGTH*frame/frames
             for led in xrange(LENGTH):
                 (h,s,v) = (color,0.7,0.5) if LENGTH - led - 1 == int(tracker) else (0,0,0)
                 (r,g,b) = utils.hsv2rgb(h,s,v)
@@ -43,7 +43,7 @@ def pattern(pattern, speed, color):
         # Soft run up
         elif pattern == '3':
             for led in xrange(-2,LENGTH+1):
-                v = 1.0*((LENGTH+3)*frame)/(FPS*speed)
+                v = float((LENGTH+3)*frame)/frames
                 v = abs(2 + led - v)
                 v = v + 1
                 v = 1.0/v
@@ -56,7 +56,7 @@ def pattern(pattern, speed, color):
         # Soft run down
         elif pattern == '4':
             for led in xrange(-1, LENGTH+2):
-                v = 1.0*((LENGTH+3)*frame)/(FPS*speed)
+                v = 1.0*((LENGTH+3)*frame)/frames
                 v = abs(LENGTH - led - v + 1)
                 v = v + 1
                 v = 1.0/v
@@ -95,6 +95,33 @@ def pattern(pattern, speed, color):
                 if frame % 2 and led == rnd and rnd2<6:
                     (r,g,b) = utils.hsv2rgb(rndh,1,1)
                 bffr += chr(r) + chr(g) + chr(b)
+        # Soft run up/down
+        elif pattern == '8':
+            f = abs(frame - (FPS*speed)/2)+(frames/LENGTH)
+            for led in xrange(-2,LENGTH+1):
+                v = 1.0*((LENGTH+3)*f)/(FPS*speed)
+                v = abs(2 + led - v)
+                v = v + 1
+                v = 1.0/v
+                v **= 3
+                #print("v: {}".format(v))
+                (r,g,b) = utils.hsv2rgb(color, 0.7, v/2)
+                #(r,g,b) = (0,0,0)
+                bffr += chr(r) + chr(g) + chr(b)
+            bffr = bffr[6:-3]
+        # One color hue cycle
+        elif pattern == '9':
+            h = frame/float(frames)
+            for led in xrange(LENGTH):
+                (r,g,b) = utils.hsv2rgb(h, 0.7, 0.5)
+                bffr += chr(r) + chr(g) + chr(b)
+        # One color value cycle
+        elif pattern == '0':
+            v = 1-abs((frame/float(frames))-0.5)*2
+            v **= 4
+            for led in xrange(LENGTH):
+                (r,g,b) = utils.hsv2rgb(color, 0.7, v)
+                bffr += chr(r) + chr(g) + chr(b)
         # Dark
         else:
             for led in xrange(LENGTH):
@@ -102,7 +129,6 @@ def pattern(pattern, speed, color):
                 bffr += chr(r) + chr(g) + chr(b)
 
         sckt.send(bffr)
-        frame += 1
         time.sleep(next(TIMER) - time.time())
         #time.sleep(0.5)
     return
