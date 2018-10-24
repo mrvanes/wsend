@@ -15,15 +15,15 @@ sckt.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sckt.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 sckt.connect((UDP_IP, UDP_PORT))
 
-TIMER = utils.next_time(time.time(), 1.0/FPS)
-
-def pattern(pattern, speed, color):
+def pattern(pattern, color, speed):
     global sckt, LENGTH, FPS, TIMER
-    frame = 0
-    print("P: %s, S: %.1f, C: %.1f\r" % (pattern, speed, color))
+    print("P: %s, c: %.1f, S: %.1f\r" % (pattern, color, speed))
 
-    frames = int(FPS*speed)
+    frametime = 1.0/FPS
+    frames = max(1, int(FPS*speed))
+
     for frame in xrange(frames):
+        start = time.time()
         #print("f: %s" % frame)
         bffr = ""
         # Hard run up
@@ -84,15 +84,15 @@ def pattern(pattern, speed, color):
                 if frame % 2 and led == rnd and rnd2<6:
                     (r,g,b) = utils.hsv2rgb(0,0,1)
                 bffr += chr(r) + chr(g) + chr(b)
-        # Twinkle radom color
+        # Twinkle random color
         elif pattern == '7':
             rnd = random.randint(0,3)
-            rnd2 = random.randint(0,10)
+            rnd2 = random.random()
             rndh = random.random()
-            rnds = random.random()
             for led in xrange(LENGTH):
                 (r,g,b) = (0,0,0)
-                if frame % 2 and led == rnd and rnd2<6:
+                if frame % 2 and led == rnd and rnd2<.6:
+                #if frame % 2 and random.random() < 0.3:
                     (r,g,b) = utils.hsv2rgb(rndh,1,1)
                 bffr += chr(r) + chr(g) + chr(b)
         # Soft run up/down
@@ -129,7 +129,9 @@ def pattern(pattern, speed, color):
                 bffr += chr(r) + chr(g) + chr(b)
 
         sckt.send(bffr)
-        time.sleep(next(TIMER) - time.time())
+        sleep = start + frametime - time.time()
+        if sleep > 0:
+            time.sleep(sleep)
         #time.sleep(0.5)
     return
 

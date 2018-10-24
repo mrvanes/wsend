@@ -31,5 +31,5 @@ while 1:
         color -= 1
 
     speed = max(0.1, speed)
-    patterns.pattern(ptrn, speed, color)
+    patterns.pattern(ptrn, color, speed)
 
