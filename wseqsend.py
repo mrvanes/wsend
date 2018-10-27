@@ -20,7 +20,6 @@ with open(sequence) as f:
         now = time.time()
         if at > now:
             time.sleep(at - now)
-        #print("m: %s, s: %s, ms: %s, p: %s, c: %s, s: %s" % (m, s, ms, pattern, color, speed))
-        sys.stdout.write("m: %s, s: %s, ms: %s, " % (m, s, ms))
+        sys.stdout.write("%s:%s:%03d " % (m, s, int(ms)))
         patterns.pattern(pattern, float(color), float(speed))
 
